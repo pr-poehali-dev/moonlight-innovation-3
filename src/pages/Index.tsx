@@ -1,17 +1,96 @@
+import { useState } from "react";
+
 export default function Index() {
+  const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitted(true);
+  }
+
+  function scrollToMenu() {
+    document.getElementById("menu-section")?.scrollIntoView({ behavior: "smooth" });
+  }
+
   return (
     <>
       <div className="grain-overlay" />
 
+      {showModal && (
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)",
+            zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px"
+          }}
+          onClick={() => { setShowModal(false); setSubmitted(false); setEmail(""); }}
+        >
+          <div
+            style={{
+              background: "var(--bg)", border: "var(--border)", boxShadow: "var(--shadow)",
+              padding: "40px", maxWidth: "480px", width: "100%"
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {submitted ? (
+              <>
+                <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "28px", marginBottom: "16px" }}>
+                  ГОТОВО!
+                </h2>
+                <p style={{ color: "#555", marginBottom: "24px", lineHeight: 1.6 }}>
+                  Мы сохранили твой email и сообщим о запуске одним из первых. Следи за обновлениями!
+                </p>
+                <button className="btn-cta" style={{ background: "var(--primary)", color: "white" }}
+                  onClick={() => { setShowModal(false); setSubmitted(false); setEmail(""); }}>
+                  Закрыть
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 style={{ fontFamily: "Unbounded, sans-serif", fontSize: "28px", marginBottom: "12px", textTransform: "uppercase" }}>
+                  СКОРО ЗАПУСК
+                </h2>
+                <p style={{ color: "#555", marginBottom: "28px", lineHeight: 1.6 }}>
+                  FoodCampus ещё в разработке. Оставь email — и ты узнаешь первым, когда можно будет сделать заказ.
+                </p>
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <input
+                    type="email"
+                    required
+                    placeholder="твой@email.ru"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    style={{
+                      border: "var(--border)", padding: "12px 16px", fontSize: "16px",
+                      background: "white", outline: "none", width: "100%"
+                    }}
+                  />
+                  <button type="submit" className="btn-cta" style={{ background: "var(--primary)", color: "white" }}>
+                    Уведомить меня
+                  </button>
+                </form>
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{ marginTop: "16px", background: "none", border: "none", cursor: "pointer", fontSize: "14px", color: "#888" }}
+                >
+                  Закрыть
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       <header className="header">
         <div className="logo">FOOD<span style={{ color: "var(--primary)" }}>*</span>CAMPUS</div>
         <nav>
-          <a href="#">Меню</a>
+          <a href="#" onClick={e => { e.preventDefault(); scrollToMenu(); }}>Меню</a>
           <a href="#">Как работает</a>
           <a href="#">Корпуса</a>
           <a href="#">Контакты</a>
         </nav>
-        <button className="btn-cta">Скачать приложение</button>
+        <button className="btn-cta" onClick={() => setShowModal(true)}>Скачать приложение</button>
       </header>
 
       <main>
@@ -26,10 +105,12 @@ export default function Index() {
               Предзаказывай еду прямо с телефона — забирай готовое или получай доставку в любой корпус ДВФУ. Без ожидания, без суеты.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
-              <button className="btn-cta" style={{ background: "var(--primary)", color: "white" }}>
+              <button className="btn-cta" style={{ background: "var(--primary)", color: "white" }}
+                onClick={() => setShowModal(true)}>
                 Сделать заказ
               </button>
-              <button className="btn-cta" style={{ background: "white" }}>
+              <button className="btn-cta" style={{ background: "white" }}
+                onClick={scrollToMenu}>
                 Смотреть меню
               </button>
             </div>
@@ -56,7 +137,7 @@ export default function Index() {
           </div>
         </div>
 
-        <section className="section-padding">
+        <section className="section-padding" id="menu-section">
           <div className="section-header">
             <h2 className="section-title">ТОП СЕГОДНЯ</h2>
             <a
@@ -69,7 +150,6 @@ export default function Index() {
           </div>
 
           <div className="menu-grid">
-            {/* Item 1 */}
             <div className="menu-card">
               <span className="menu-tag">Хит продаж</span>
               <img
@@ -77,14 +157,7 @@ export default function Index() {
                 alt="Фирменный бургер"
               />
               <div className="menu-card-body">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>Фирменный бургер</h3>
                   <span className="price">290 ₽</span>
                 </div>
@@ -94,24 +167,14 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Item 2 */}
             <div className="menu-card">
-              <span className="menu-tag" style={{ background: "var(--secondary)" }}>
-                Популярное
-              </span>
+              <span className="menu-tag" style={{ background: "var(--secondary)" }}>Популярное</span>
               <img
                 src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                 alt="Боул с курицей"
               />
               <div className="menu-card-body">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>Боул с курицей</h3>
                   <span className="price">350 ₽</span>
                 </div>
@@ -119,24 +182,14 @@ export default function Index() {
               </div>
             </div>
 
-            {/* Item 3 */}
             <div className="menu-card">
-              <span className="menu-tag" style={{ background: "var(--accent)", color: "var(--dark)" }}>
-                Новинка
-              </span>
+              <span className="menu-tag" style={{ background: "var(--accent)", color: "var(--dark)" }}>Новинка</span>
               <img
                 src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                 alt="Пицца слайс"
               />
               <div className="menu-card-body">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>Пицца слайс</h3>
                   <span className="price">180 ₽</span>
                 </div>
@@ -154,8 +207,9 @@ export default function Index() {
             <p className="vibe-text">
               Открой приложение FoodCampus, выбери блюдо из ближайшей точки, оплати онлайн — и забери готовое в удобное время или жди доставку прямо к корпусу. Никаких очередей, никакого стресса перед парой.
             </p>
-            <button className="btn-cta" style={{ background: "var(--dark)", color: "white", borderColor: "white" }}>
-              Подробнее
+            <button className="btn-cta" style={{ background: "var(--dark)", color: "white", borderColor: "white" }}
+              onClick={() => setShowModal(true)}>
+              Попробовать
             </button>
           </div>
           <div className="vibe-img"></div>
@@ -167,28 +221,16 @@ export default function Index() {
           </h2>
           <div className="social-grid">
             <div className="social-item">
-              <img
-                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                alt="Фото 1"
-              />
+              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Фото 1" />
             </div>
             <div className="social-item">
-              <img
-                src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                alt="Фото 2"
-              />
+              <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Фото 2" />
             </div>
             <div className="social-item">
-              <img
-                src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                alt="Фото 3"
-              />
+              <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Фото 3" />
             </div>
             <div className="social-item">
-              <img
-                src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                alt="Фото 4"
-              />
+              <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Фото 4" />
             </div>
           </div>
         </section>
@@ -204,26 +246,10 @@ export default function Index() {
         <div className="footer-links">
           <h4>Навигация</h4>
           <ul>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                Меню
-              </a>
-            </li>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                Как работает
-              </a>
-            </li>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                Политика конфиденциальности
-              </a>
-            </li>
-            <li>
-              <a href="#" style={{ color: "inherit", textDecoration: "none" }}>
-                Поддержка
-              </a>
-            </li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }}>Меню</a></li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }}>Как работает</a></li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }}>Политика конфиденциальности</a></li>
+            <li><a href="#" style={{ color: "inherit", textDecoration: "none" }}>Поддержка</a></li>
           </ul>
         </div>
         <div className="footer-links">
@@ -239,18 +265,9 @@ export default function Index() {
           <h4>Время работы</h4>
           <table className="footer-hours">
             <tbody>
-              <tr>
-                <td>Пн–Пт</td>
-                <td>08:00 – 21:00</td>
-              </tr>
-              <tr>
-                <td>Суббота</td>
-                <td>09:00 – 18:00</td>
-              </tr>
-              <tr>
-                <td>Воскресенье</td>
-                <td>Выходной</td>
-              </tr>
+              <tr><td>Пн–Пт</td><td>08:00 – 21:00</td></tr>
+              <tr><td>Суббота</td><td>09:00 – 18:00</td></tr>
+              <tr><td>Воскресенье</td><td>Выходной</td></tr>
             </tbody>
           </table>
         </div>
